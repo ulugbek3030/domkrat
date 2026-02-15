@@ -11,10 +11,10 @@ import { Card, CardContent } from "@/components/ui/card"
 export default function RegisterPage() {
   const router = useRouter()
   const [state, formAction, pending] = useActionState(
-    async (_prev: { error?: string; success?: boolean } | undefined, formData: FormData) => {
+    async (_prev: { error?: string; success?: boolean; email?: string } | undefined, formData: FormData) => {
       const result = await registerUser(formData)
-      if (result.success) {
-        router.push("/login?registered=true")
+      if (result.success && result.email) {
+        router.push(`/verify-email?email=${encodeURIComponent(result.email)}`)
       }
       return result
     },
@@ -48,7 +48,7 @@ export default function RegisterPage() {
 
         <p className="mt-4 text-center text-sm text-gray-600">
           Уже есть аккаунт?{" "}
-          <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+          <Link href="/login" className="font-medium text-accent hover:text-accent-hover">
             Войти
           </Link>
         </p>

@@ -1,15 +1,28 @@
 "use client"
 
 import Link from "next/link"
-import { useSession } from "next-auth/react"
-import { Search, ShoppingCart, User, Menu, X } from "lucide-react"
-import { useState } from "react"
+import { useSession, signOut } from "next-auth/react"
+import { Search, ShoppingCart, User, Menu, X, LogOut, Package, ChevronDown } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { Logo } from "@/components/ui/logo"
 
 export function Header() {
   const { data: session } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const userMenuRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   return (
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white">
@@ -42,14 +55,48 @@ export function Header() {
             </Link>
 
             {session?.user ? (
-              <div className="hidden items-center gap-2 md:flex">
-                <Link href="/profile" className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900">
-                  <User className="h-5 w-5" />
-                </Link>
-                {(session.user.role === "ADMIN" || session.user.role === "MANAGER") && (
-                  <Link href="/admin" className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-hover">
-                    Админ
-                  </Link>
+              <div className="relative hidden md:block" ref={userMenuRef}>
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  <User className="h-4 w-4" />
+                  <span className="max-w-[120px] truncate">{session.user.name}</span>
+                  <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", userMenuOpen && "rotate-180")} />
+                </button>
+
+                {userMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                    <div className="border-b border-gray-100 px-4 py-2">
+                      <p className="text-sm font-medium text-gray-900 truncate">{session.user.name}</p>
+                      <p className="text-xs text-gray-500 truncate">{session.user.email}</p>
+                    </div>
+                    <Link
+                      href="/orders"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      <Package className="h-4 w-4" />
+                      Мои заказы
+                    </Link>
+                    {(session.user.role === "ADMIN" || session.user.role === "MANAGER") && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-accent font-medium hover:bg-orange-50"
+                      >
+                        <User className="h-4 w-4" />
+                        Админ-панель
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Выйти
+                    </button>
+                  </div>
                 )}
               </div>
             ) : (
@@ -117,6 +164,12 @@ export function Header() {
       {/* Mobile Menu */}
       <div className={cn("border-t border-gray-200 bg-white md:hidden", mobileMenuOpen ? "block" : "hidden")}>
         <div className="space-y-1 px-4 py-3">
+          {session?.user && (
+            <div className="mb-2 border-b border-gray-100 pb-2">
+              <p className="px-3 text-sm font-medium text-gray-900">{session.user.name}</p>
+              <p className="px-3 text-xs text-gray-500">{session.user.email}</p>
+            </div>
+          )}
           <Link href="/catalog" className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
             Каталог
           </Link>
@@ -126,15 +179,20 @@ export function Header() {
           <hr className="my-2" />
           {session?.user ? (
             <>
-              <Link href="/profile" className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                Профиль
-              </Link>
               <Link href="/orders" className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 Мои заказы
               </Link>
-              <Link href="/wishlist" className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                Избранное
-              </Link>
+              {(session.user.role === "ADMIN" || session.user.role === "MANAGER") && (
+                <Link href="/admin" className="block rounded-lg px-3 py-2 text-sm font-medium text-accent hover:bg-orange-50">
+                  Админ-панель
+                </Link>
+              )}
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+              >
+                Выйти
+              </button>
             </>
           ) : (
             <>
