@@ -2,6 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { formatPrice } from "@/lib/format"
 import { Badge } from "@/components/ui/badge"
+import { AddToCartCardButton } from "@/components/product/add-to-cart-card-button"
 
 interface ProductCardProps {
   product: {
@@ -23,7 +24,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/catalog/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white transition-shadow hover:shadow-md"
+      className="group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="relative aspect-square bg-gray-100">
         {primaryImage ? (
@@ -52,11 +53,11 @@ export function ProductCard({ product }: ProductCardProps) {
         {product.brandName && (
           <p className="text-xs font-medium text-gray-500">{product.brandName}</p>
         )}
-        <h3 className="mt-1 line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-blue-600">
+        <h3 className="mt-1 line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-orange-500">
           {product.name}
         </h3>
         <div className="mt-auto pt-3">
-          <p className="text-lg font-bold text-gray-900">
+          <p className="text-lg font-bold text-orange-500">
             {formatPrice(product.price.toString())}
           </p>
           {product.compareAtPrice && Number(product.compareAtPrice) > Number(product.price) && (
@@ -65,6 +66,13 @@ export function ProductCard({ product }: ProductCardProps) {
             </p>
           )}
         </div>
+        <AddToCartCardButton
+          productId={product.id}
+          name={product.name}
+          price={Number(product.price.toString())}
+          image={primaryImage?.url}
+          disabled={!inStock}
+        />
       </div>
     </Link>
   )

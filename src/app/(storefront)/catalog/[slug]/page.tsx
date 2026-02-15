@@ -48,11 +48,11 @@ export default async function ProductDetailPage(props: { params: Promise<{ slug:
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Breadcrumbs */}
       <nav className="mb-6 text-sm text-gray-500">
-        <a href="/" className="hover:text-blue-600">Главная</a>
+        <a href="/" className="hover:text-orange-500">Главная</a>
         {" / "}
-        <a href="/catalog" className="hover:text-blue-600">Каталог</a>
+        <a href="/catalog" className="hover:text-orange-500">Каталог</a>
         {" / "}
-        <a href={`/catalog?category=${product.category.slug}`} className="hover:text-blue-600">
+        <a href={`/catalog?category=${product.category.slug}`} className="hover:text-orange-500">
           {product.category.name}
         </a>
         {" / "}
@@ -109,7 +109,7 @@ export default async function ProductDetailPage(props: { params: Promise<{ slug:
           </div>
 
           <div className="mt-6">
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-3xl font-bold text-orange-500">
               {formatPrice(product.price.toString())}
             </p>
             {product.compareAtPrice && Number(product.compareAtPrice) > Number(product.price) && (

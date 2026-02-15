@@ -41,7 +41,7 @@ export function AddToCartButton({ productId, productName, price, image, disabled
   if (!mounted) return null
 
   return (
-    <Button onClick={handleClick} disabled={disabled} size="lg" className="w-full sm:w-auto">
+    <Button onClick={handleClick} disabled={disabled} size="lg" variant="accent" className="w-full sm:w-auto">
       <ShoppingCart className="mr-2 h-5 w-5" />
       {disabled ? "Нет в наличии" : "В корзину"}
     </Button>

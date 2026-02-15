@@ -91,7 +91,7 @@ export default async function CatalogPage(props: {
                     type="submit"
                     name="sort"
                     value={opt.value}
-                    className={`block w-full rounded px-2 py-1 text-left text-sm ${sort === opt.value ? "bg-blue-50 font-medium text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}
+                    className={`block w-full rounded px-2 py-1 text-left text-sm ${sort === opt.value ? "bg-orange-50 font-medium text-orange-600" : "text-gray-600 hover:bg-gray-50"}`}
                   >
                     {opt.label}
                   </button>
@@ -107,7 +107,7 @@ export default async function CatalogPage(props: {
                   <li key={cat.slug}>
                     <a
                       href={`/catalog?category=${cat.slug}`}
-                      className={`block rounded px-2 py-1 text-sm ${categorySlug === cat.slug ? "bg-blue-50 font-medium text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}
+                      className={`block rounded px-2 py-1 text-sm ${categorySlug === cat.slug ? "bg-orange-50 font-medium text-orange-600" : "text-gray-600 hover:bg-gray-50"}`}
                     >
                       {cat.name} ({cat._count.products})
                     </a>
@@ -125,7 +125,7 @@ export default async function CatalogPage(props: {
                     <li key={b.brandName}>
                       <a
                         href={`/catalog?brand=${b.brandName}`}
-                        className={`block rounded px-2 py-1 text-sm ${brand === b.brandName ? "bg-blue-50 font-medium text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}
+                        className={`block rounded px-2 py-1 text-sm ${brand === b.brandName ? "bg-orange-50 font-medium text-orange-600" : "text-gray-600 hover:bg-gray-50"}`}
                       >
                         {b.brandName}
                       </a>
