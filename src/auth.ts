@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import Google from "next-auth/providers/google"
+import Apple from "next-auth/providers/apple"
 import bcrypt from "bcrypt"
 import { prisma } from "@/lib/db"
 import { authConfig } from "./auth.config"
@@ -13,6 +14,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    Apple({
+      clientId: process.env.APPLE_CLIENT_ID!,
+      clientSecret: process.env.APPLE_CLIENT_SECRET!,
     }),
     Credentials({
       name: "credentials",
@@ -49,16 +54,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     ...authConfig.callbacks,
     async signIn({ user, account, profile }) {
-      if (account?.provider === "google") {
+      if (account?.provider === "google" || account?.provider === "apple") {
         const email = user.email!
         let dbUser = await prisma.user.findUnique({ where: { email } })
 
         if (!dbUser) {
+          let firstName = ""
+          let lastName = ""
+
+          if (account.provider === "google") {
+            firstName = (profile?.given_name as string) || user.name?.split(" ")[0] || ""
+            lastName = (profile?.family_name as string) || user.name?.split(" ").slice(1).join(" ") || ""
+          } else if (account.provider === "apple") {
+            firstName = user.name?.split(" ")[0] || ""
+            lastName = user.name?.split(" ").slice(1).join(" ") || ""
+          }
+
           dbUser = await prisma.user.create({
             data: {
               email,
-              firstName: (profile?.given_name as string) || user.name?.split(" ")[0] || "",
-              lastName: (profile?.family_name as string) || user.name?.split(" ").slice(1).join(" ") || "",
+              firstName: firstName || "Пользователь",
+              lastName: lastName || "",
               image: user.image || null,
               emailVerified: new Date(),
             },
